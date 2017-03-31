@@ -1,0 +1,80 @@
+/*find the next col with nonzero data, ret col index*/
+int getNextTransition (int dropNum) {
+
+  int col = -1;
+  for (int j = 0; j < MAX_NUM_TRANS; j++) {
+    //Serial.println(dropMoveMatrix[dropNum][j]);
+    if (dropMoveMatrix[dropNum][j] != 0) {
+      col = j;
+      j = MAX_NUM_TRANS;
+    }  
+  }
+  return col;   
+}
+
+int moveDrop(int dropNum, int trans, int dir) {
+
+  /*vertical movement*/
+  int movement = dropMoveMatrix[dropNum][trans];
+  
+  //Serial.print("The movement val is ");
+  //Serial.println(movement);
+  if (dropNum == 2) {
+    
+    }
+//want to chekc if moving drop out of the board?*/
+
+    
+  if (dir) {
+    if (movement > 0) {
+        dropMoveMatrix[dropNum][trans]--;
+        drop[dropNum].move_up();
+      }  
+     else {
+        dropMoveMatrix[dropNum][trans]++;
+        drop[dropNum].move_down();
+      }
+  } 
+  /*horizontal movement*/
+  else {
+    if (movement > 0) {
+        dropMoveMatrix[dropNum][trans]--;
+        drop[dropNum].move_right();
+      }  
+     else {
+        dropMoveMatrix[dropNum][trans]++;
+        drop[dropNum].move_left();
+      }
+  }
+  update();
+  delay(DROP_MOVE_DELAY); 
+}
+
+/*trace through matrix to move drops*/
+void moveTheDrops() {
+
+  int finish = 0, trans = 0, transVal = 0, doneRow = 0;
+
+  while (!finish) {
+    //Serial.print("In while loop!\n");  
+    doneRow = 0;
+    for (int dropNum = 0; dropNum < MAX_NUM_DROPS; dropNum++) {
+      //Serial.println("In for loop");
+
+      trans = getNextTransition(dropNum);
+      //Serial.println("for loop");
+      //Serial.println(trans, DEC);
+      if (trans >= 0) {
+        moveDrop(dropNum, trans, trans%2);
+      }
+      else {
+        doneRow++;
+        if (doneRow == MAX_NUM_DROPS) {
+          finish = 1;
+        }
+      }
+    }
+  }
+/*notify the user the data has been read*/
+  blinkLED();
+}
